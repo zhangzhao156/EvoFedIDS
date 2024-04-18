@@ -130,68 +130,6 @@ def readdataset():
     print('test', sorted(Counter(np_label_test).items()))
     return np_features_train, np_label_train, np_features_test, np_label_test
 
-# def readdataset(is_training1):
-#     raw_data0 = pd.read_csv('NewCleanedData/Friday-02-03-2018_TrafficForML_CICFlowMeter.csv-Benign.csv', header=0)
-#     raw_data1 = pd.read_csv('NewCleanedData/Friday-02-03-2018_TrafficForML_CICFlowMeter.csv-Bot.csv', header=0)
-#     raw_data2 = pd.read_csv('NewCleanedData/Friday-16-02-2018_TrafficForML_CICFlowMeter.csv-DoS attacks-Hulk.csv',
-#                             header=0)
-#     raw_data3 = pd.read_csv('NewCleanedData/Wednesday-14-02-2018_TrafficForML_CICFlowMeter.csv-FTP-BruteForce.csv',
-#                             header=0)
-#     raw_data4 = pd.read_csv('NewCleanedData/Wednesday-14-02-2018_TrafficForML_CICFlowMeter.csv-SSH-Bruteforce.csv',
-#                             header=0)
-#     raw_data5 = pd.read_csv(
-#         'NewCleanedData/Thuesday-20-02-2018_TrafficForML_CICFlowMeter.csv-DDoS attacks-LOIC-HTTP.csv', header=0)
-#     raw_data6 = pd.read_csv(
-#         'NewCleanedData/Wednesday-21-02-2018_TrafficForML_CICFlowMeter.csv-DDOS attack-HOIC.csv', header=0)
-#
-#     raw_data0 = preprocess(raw_data0)
-#     raw_data1 = preprocess(raw_data1)
-#     raw_data2 = preprocess(raw_data2)
-#     raw_data3 = preprocess(raw_data3)
-#     raw_data4 = preprocess(raw_data4)
-#     raw_data5 = preprocess_v2(raw_data5)
-#     raw_data6 = preprocess(raw_data6)
-#
-#     if is_training1 == 'Training':
-#         train0 = raw_data0.iloc[0:112000]
-#         train1 = raw_data1.iloc[0:112000]
-#         train2 = raw_data2.iloc[0:112000]
-#         train3 = raw_data3.iloc[0:112000]
-#         train4 = raw_data4.iloc[0:112000]
-#         train5 = raw_data5.iloc[0:112000]
-#         train6 = raw_data6.iloc[0:112000]
-#         df_train = pd.concat([train0, train1, train2, train3, train4, train5, train6])  #
-#         df_train = shuffle(df_train)
-#         features_train = df_train.iloc[:, 0:df_train.shape[1] - 1]
-#         np_features_train = np.array(features_train)
-#         scaler = MinMaxScaler()
-#         scaler.fit(np_features_train)
-#         np_features_train = scaler.transform(np_features_train)
-#         joblib.dump(scaler, "scaler.gz")
-#         np_features = np_features_train[:, np.newaxis, :]
-#         labels_train = df_train.iloc[:, df_train.shape[1] - 1:]
-#         labels_train = labels_train.values.ravel()
-#         np_labels = np.array(labels_train)
-#     else:
-#         test0 = raw_data0.iloc[112000:160000]
-#         test1 = raw_data1.iloc[112000:160000]
-#         test2 = raw_data2.iloc[112000:160000]
-#         test3 = raw_data3.iloc[112000:160000]
-#         test4 = raw_data4.iloc[112000:160000]
-#         test5 = raw_data5.iloc[112000:160000]
-#         test6 = raw_data6.iloc[112000:160000]
-#
-#         df_test = pd.concat([test0, test1, test2, test3, test4, test5, test6])  ##
-#         df_test = shuffle(df_test)
-#         features_test = df_test.iloc[:, 0:df_test.shape[1] - 1]
-#         np_features_test = np.array(features_test)
-#         scaler = joblib.load('scaler.gz')
-#         np_features_test = scaler.transform(np_features_test)
-#         np_features = np_features_test[:, np.newaxis, :]
-#         labels_test = df_test.iloc[:, df_test.shape[1] - 1:]
-#         labels_test = labels_test.values.ravel()
-#         np_labels = np.array(labels_test)
-#     return np_features, np_labels
 
 
 class ReadData(Dataset):
@@ -248,20 +186,7 @@ def dataset_from_labels(imgs, targets, class_set):
     # print('class_mask',class_mask.shape)
     return ReadData(imgs[class_mask], targets[class_mask])
 
-# def iid(dataset, num_users):
-#     """
-#     Sample I.I.D. client data from dataset
-#     :param dataset:
-#     :param num_users:
-#     :return: dict of image index
-#     """
-#     num_items = int(len(dataset) / num_users)
-#     dict_users, all_idxs = {}, [i for i in range(len(dataset))]
-#     for i in range(num_users):
-#         dict_users[i] = set(np.random.choice(all_idxs, num_items,
-#                                              replace=False))  # Generates random samples from all_idexs,return a array with size of num_items
-#         all_idxs = list(set(all_idxs) - dict_users[i])
-#     return dict_users
+
 
 def iid(dataset, client_list):
     """
@@ -441,65 +366,7 @@ def test2(train_set, model):
 
 
 
-# def update_memory_proto(train_set, model, m):
-#     train_embeddings, train_labels = get_all_embeddings(train_set, model)
-#     classes, _ = torch.unique(train_labels).sort()
-#     prototypes = {}
-#     memory = np.empty((0,1,68))
-#     memeory_class_list = np.empty((0))
-#
-#     cls_number = [torch.where(train_labels == cls)[0].size(0) for cls in classes]
-#     # print('#### the candidate counter for memory', cls_number)
-#     all_men_number = m
-#     all_cls_number = len(cls_number)
-#     cls_memory_size = {}
-#     for i in range(len(cls_number)):
-#         if cls_number[i] < m/len(cls_number):
-#             cls_memory_size[classes[i].item()]=cls_number[i]
-#             all_men_number -= cls_number[i]
-#             all_cls_number -= 1
-#     for i in range(len(cls_number)):
-#         if cls_number[i] >= m / len(cls_number):
-#             cls_memory_size[classes[i].item()] = int(all_men_number/all_cls_number)
-#     # print('cls_memory_size',cls_memory_size)
-#
-#     std_proto = {}
-#     for c in classes:
-#         class_embeddings = train_embeddings[torch.where(train_labels == c)[0]]
-#         p = class_embeddings.mean(dim=0)  # Average class feature vectors
-#         p_std = class_embeddings.std(dim=0).sum()
-#         std_proto[c.item()] = p_std.item()
-#         # print('class_embeddings',class_embeddings.size(),'p',p.size(),(class_embeddings-p).size())
-#         dd = np.linalg.norm((class_embeddings-p).cpu(), axis=1)
-#         # print(dd)
-#         # print('c',c.cpu())
-#         # memeory_class_list.append(c.item())
-#         m = cls_memory_size[c.item()]
-#         #### random selection
-#         idx = np.random.permutation(torch.where(train_labels == c)[0].cpu())
-#         #### prototype guided selection
-#         # idx_sort =np.argsort(-dd)
-#         # # print('before idx',(torch.where(train_labels == c)[0].cpu()))
-#         # idx = (torch.where(train_labels == c)[0].cpu())[idx_sort]
-#         # # print('sort idx2',idx2)
-#         if m < dd.shape[0]:
-#             # idx = np.argpartition(dd, m)
-#             # print('22222',(train_set.x_train)[idx[:m - 1]].shape,(train_set.y_train)[idx[:m - 1]].shape)
-#             memory = np.append(memory,(train_set.x_train)[idx[:m]],axis=0)
-#             memeory_class_list = np.append( memeory_class_list,(train_set.y_train)[idx[:m]],axis=0)
-#         else:
-#             m = dd.shape[0]
-#             # idx = np.argpartition(dd, m)
-#             # print('22222', (train_set.x_train)[idx[:m - 1]].shape,(train_set.y_train)[idx[:m - 1]].shape)
-#             memory = np.append(memory,(train_set.x_train)[idx[:m]],axis=0)
-#             memeory_class_list = np.append( memeory_class_list,(train_set.y_train)[idx[:m]],axis=0)
-#         prototypes[c.item()]=p
-#         # prototypes.append(p)
-#     # prototypes = torch.stack(prototypes, dim=0)
-#     # print('33333',memeory_class_list.shape,memory.shape)
-#     print('memeory_class_list',Counter(memeory_class_list))
-#     print('std', std_proto)
-#     return prototypes,memory,memeory_class_list
+
 
 def update_memory_proto(train_set, model, m):
     train_embeddings, train_labels = get_all_embeddings(train_set, model)
