@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2022/4/30 14:55
-# @Author  : zhao
-# @File    : main_our_ids2018.py
 
 import pandas as pd
 import numpy as np
